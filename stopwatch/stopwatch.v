@@ -24,6 +24,9 @@ module top (
 
         reg running = 0;
 
+        reg [7:0] lap_value = 0;
+        reg [4:0] lap_timeout = 0;
+
 	// Combinatorial logic
 	assign LED1 = !BTN_N;                            // Not operator example
 	assign LED2 = BTN1 || BTN2;                      // Or operator example
@@ -50,15 +53,25 @@ module top (
                     running <= 0;
                 end
 
+                if (BTN2) begin
+                    lap_value <= display_value;
+                    lap_timeout <= 20;
+                end
+
 		// Timer counter
                 if (!BTN_N) begin
                         display_value <= 0;
                         running <= 0;
+                        lap_timeout <= 0;
                 end
 
                 if (clkdiv_pulse && running) begin
 			display_value <= display_value_inc;
 		end
+
+                if (clkdiv_pulse && lap_timeout) begin
+                    lap_timeout <= lap_timeout - 1;
+                end
 
 	end
 
@@ -70,7 +83,7 @@ module top (
 	// 7 segment display control Pmod 1A
 	seven_seg_ctrl seven_segment_ctrl (
 		.CLK(CLK),
-		.din(display_value[7:0]),
+		.din(lap_timeout ? lap_value[7:0] : display_value[7:0]),
 		.dout(seven_segment)
 	);
 
