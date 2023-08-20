@@ -37,6 +37,7 @@ module top (
 	// Synchronous logic
 	always @(posedge CLK) begin
 		// Clock divider pulse generator
+		/* if (clkdiv == 120000) begin // speed up simulation */
 		if (clkdiv == 1200000) begin
 			clkdiv <= 0;
 			clkdiv_pulse <= 1;
